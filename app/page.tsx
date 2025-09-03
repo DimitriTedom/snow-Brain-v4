@@ -1,11 +1,17 @@
+import BrainCard from '@/components/BrainCard'
 import { Button } from '@/components/ui/button'
-import React from 'react'
 
 const Page = () => {
   return (
-    <div className='text-2xl bg-red-900'>
-      <Button>Let's start</Button>
-    </div>
+  <main>
+    <h1 className='text-2xl underline'>Popular Brains</h1>
+
+    <section className='home-section'>
+      <BrainCard/>
+      <BrainCard/>
+      <BrainCard/>
+    </section>
+  </main>
   )
 }
 
