@@ -2,6 +2,7 @@ import BrainCard from "@/components/BrainCard";
 import BrainList from "@/components/BrainList";
 import Cta from "@/components/Cta";
 import { Button } from "@/components/ui/button";
+import { recentSessions } from "@/constants";
 
 const Page = () => {
   return (
@@ -36,7 +37,7 @@ const Page = () => {
       </section>
 
       <section className="home-section">
-        <BrainList />
+        <BrainList title="Recently completed Session" brains={recentSessions} classNames="w-2/3 max-lg:w-full"/>
         <Cta />
       </section>
     </main>

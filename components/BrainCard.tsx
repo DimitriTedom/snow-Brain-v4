@@ -42,10 +42,11 @@ const BrainCard = ({
         <p className="text-sm">{duration} minutes</p>
       </div>
 
-      <Link href={`/brains/${id}`} className="w-full"></Link>
-      <button className="btn-primary w-full justify-center">
-        Lauch Lesson
-      </button>
+      <Link href={`/brains/${id}`} className="w-full">
+        <button className="btn-primary w-full justify-center">
+          Lauch Lesson
+        </button>
+      </Link>
     </article>
   );
 };
