@@ -1,7 +1,6 @@
 import BrainCard from "@/components/BrainCard";
 import BrainList from "@/components/BrainList";
 import Cta from "@/components/Cta";
-import { Button } from "@/components/ui/button";
 import { recentSessions } from "@/constants";
 
 const Page = () => {
