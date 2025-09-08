@@ -22,6 +22,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { subjects } from "@/constants";
 import { Textarea } from "./ui/textarea";
+import { createBrain } from "@/lib/actions/brains.actions";
+import { redirect } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Brain is required" }),
@@ -45,8 +47,15 @@ const BrainForm = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const brain = await createBrain(values);
+    console.log(brain)
+    if (brain) {
+      redirect(`/brains/${brain.id}`);
+    }else{
+      console.log('Failed to create a brain')
+      redirect('/');
+    }
   };
   return (
     <Form {...form}>
@@ -122,7 +131,7 @@ const BrainForm = () => {
         />
         <FormField
           control={form.control}
-          name="subject"
+          name="voice"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Voices</FormLabel>
