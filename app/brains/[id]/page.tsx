@@ -1,3 +1,4 @@
+import BrainComponent from "@/components/BrainComponent";
 import { getBrain } from "@/lib/actions/brains.actions";
 import { getSubjectColor } from "@/lib/utils";
 import { currentUser } from "@clerk/nextjs/server";
@@ -9,9 +10,10 @@ interface BrainSessionProps {
 }
 const BrainSession = async ({ params }: BrainSessionProps) => {
   const { id } = await params;
-  const {name,subject,title,topic,duration} = await getBrain(id);
+  const brain = await getBrain(id);
   const user = await currentUser();
 
+  const  {name,subject,title,topic,duration} = brain
   if (!user) redirect("/sign-in");
   if (!name) redirect("/brains");
   return (
@@ -43,6 +45,7 @@ const BrainSession = async ({ params }: BrainSessionProps) => {
         </div>
         <div className="items-start text-2xl max-md:hidden">{duration} minutes</div>
       </article>
+      <BrainComponent {...brain} userName={user.firstName!} userImage={user.imageUrl}/>
     </main>
   );
 };
