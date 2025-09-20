@@ -85,7 +85,7 @@ const BrainComponent = ({
         style,
       },
       clientMessages: ["transcript"],
-      severMessages: [],
+      serverMessages: [],
     };
     // @ts-expect-error
     vapi.start(configureAssistant(voice, style),assistantOverrides);
