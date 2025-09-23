@@ -1,7 +1,6 @@
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -29,7 +28,7 @@ const BrainList = ({ title, brains, classNames }: BrainListProps) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {brains?.map(({ id, subject, name, topic, duration }) => (
+          {brains.map(({ id, subject, name, topic, duration }) => (
             <TableRow key={id}>
               <TableCell>
                 <Link href={`/brains/${id}`}>

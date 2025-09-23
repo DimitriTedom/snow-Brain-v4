@@ -72,7 +72,7 @@ interface SavedMessage {
 }
 
 interface CompanionComponentProps {
-  companionId: string;
+  brainId: string;
   subject: string;
   topic: string;
   name: string;

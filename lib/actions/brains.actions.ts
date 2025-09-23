@@ -54,3 +54,57 @@ export const getBrain = async (id: string) => {
 
   return data[0];
 };
+
+export const addToSessionHistory = async (brainId: string) => {
+const {userId} = await auth();
+  const supabase = await createSupabaseClient();
+
+  const { data, error } = await supabase
+    .from("session_history")
+    .insert({ brain_id: brainId, user_id: userId })
+
+  if (error || !data)
+    throw new Error(error?.message || "Failed to add to session history");
+  return data[0];
+}
+
+export const getRecentSession = async (limit=10) => {
+  const supabase = await createSupabaseClient();
+
+  const { data, error } = await supabase
+    .from("session_history")
+    .select(`brains:brains_id (*)`)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) throw new Error(error.message);
+  console.log({data})
+  return data.map(({brains})=>brains);
+}
+
+export const getUserSessions = async (userId: string, limit=10 ) => {
+  const supabase = await createSupabaseClient();
+
+  const { data, error } = await supabase
+    .from("session_history")
+    .select(`brains:brains_id (*)`)
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) throw new Error(error.message);
+  return data.map(({brains})=>brains);
+}
+
+export const getUserBrain = async (userId: string) => {
+  const supabase = await createSupabaseClient();
+
+  const { data, error } = await supabase
+    .from("brains")
+    .select()
+    .eq("author", userId)
+
+
+  if (error) throw new Error(error.message);
+  return data;
+}

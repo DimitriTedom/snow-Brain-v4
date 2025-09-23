@@ -2,7 +2,11 @@ import React from 'react'
 
 const Profile = () => {
   return (
-    <div>Profile</div>
+    <main className='min-lg:w-3/4'>
+    <section>
+      
+    </section>
+    </main>
   )
 }
 

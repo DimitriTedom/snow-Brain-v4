@@ -5,14 +5,16 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import Lottie, { LottieRefCurrentProps } from "lottie-react";
 import soundwaves from "@/constants/soundwaves.json";
+import { addToSessionHistory } from "@/lib/actions/brains.actions";
+
 enum CallStatus {
   INACTIVE = "INACTIVE",
   CONNECTING = "CONNECTING",
   ACTIVE = "ACTIVE",
   FINISHED = "FINISHED",
 }
-const BrainComponent = ({
-  //   brainId,
+const BrainComponent =  ({
+    brainId,
   subject,
   topic,
   name,
@@ -38,7 +40,12 @@ const BrainComponent = ({
   }, [isSpeaking, lottieRef]);
   useEffect(() => {
     const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
-    const onCallEnd = () => setCallStatus(CallStatus.FINISHED);
+    const onCallEnd = () => {
+      setCallStatus(CallStatus.FINISHED);
+
+      addToSessionHistory(brainId);
+      
+    }
 
     const onMessage = (message: Message) => {
       if (message.type === "transcript" && message.transcriptType === "final") {
