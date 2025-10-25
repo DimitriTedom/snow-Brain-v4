@@ -45,7 +45,16 @@ const BrainSession = async ({ params }: BrainSessionProps) => {
         </div>
         <div className="items-start text-2xl max-md:hidden">{duration} minutes</div>
       </article>
-      <BrainComponent {...brain} userName={user.firstName!} userImage={user.imageUrl}/>
+      <BrainComponent 
+        brainId={brain.id}
+        subject={brain.subject}
+        topic={brain.topic}
+        name={brain.name}
+        voice={brain.voice}
+        style={brain.style}
+        userName={user.firstName!} 
+        userImage={user.imageUrl}
+      />
     </main>
   );
 };

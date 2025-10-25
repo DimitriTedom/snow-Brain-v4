@@ -1,3 +1,10 @@
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+
 import React from 'react'
 
 const Profile = () => {
@@ -6,6 +13,7 @@ const Profile = () => {
     <section>
       
     </section>
+    
     </main>
   )
 }

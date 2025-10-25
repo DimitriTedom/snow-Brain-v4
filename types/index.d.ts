@@ -7,7 +7,7 @@
 
 enum Subject {
   maths = "maths",
-  language = "language",
+  language = "language", 
   science = "science",
   history = "history",
   coding = "coding",
@@ -17,14 +17,21 @@ enum Subject {
   business = "business",
 }
 
-type Companion = Models.DocumentList<Models.Document> & {
-  $id: string;
+interface Brain {
+  id: string;
   name: string;
-  subject: Subject;
+  subject: string;
   topic: string;
+  voice?: string;
+  style?: string;
   duration: number;
+  author: string;
   bookmarked: boolean;
-};
+  created_at: string;
+  updated_at: string;
+}
+
+type Companion = Brain;
 
 interface CreateCompanion {
   name: string;
