@@ -19,7 +19,7 @@ export const configureAssistant = (voice: string, style: string) => {
   const vapiAssistant: CreateAssistantDTO = {
     name: "SnowBrain v4",
     firstMessage:
-      "Hello! Welcome to your tutoring session. Today we'll be learning about {{topic}} in {{subject}}. I'm excited to teach you! Are you ready to get started?",
+      "Hello! Welcome to your tutoring session. Today we'll be learning about {{topic}} in {{subject}}.",
     transcriber: {
       provider: "deepgram",
       model: "nova-3",
@@ -35,10 +35,10 @@ export const configureAssistant = (voice: string, style: string) => {
       useSpeakerBoost: true,
     },
     model: {
-      provider: "deep-seek",
-      model: "deepseek-chat",
+      provider: "openai",
+      model: "gpt-3.5-turbo",
       temperature: 0.7,
-      maxTokens: 150,
+      maxTokens: 1000,
       messages: [
         {
           role: "system",
