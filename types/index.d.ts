@@ -5,7 +5,7 @@
 //   accountId: string;
 // };
 
-enum Subject {
+export enum Subject {
   maths = "maths",
   language = "language", 
   science = "science",
@@ -17,7 +17,16 @@ enum Subject {
   business = "business",
 }
 
-interface Brain {
+export interface User {
+  id: string; // Clerk user ID
+  email: string;
+  name: string;
+  avatar_url?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Brain {
   id: string;
   name: string;
   subject: string;
@@ -26,21 +35,20 @@ interface Brain {
   style?: string;
   duration: number;
   author: string;
-  bookmarked: boolean;
   created_at: string;
   updated_at: string;
 }
 
-interface UserBookmark {
+export interface UserBookmark {
   id: string;
   user_id: string;
   brain_id: string;
   created_at: string;
 }
 
-type Companion = Brain;
+export type Companion = Brain;
 
-interface CreateCompanion {
+export interface CreateCompanion {
   name: string;
   subject: string;
   topic: string;
@@ -49,43 +57,42 @@ interface CreateCompanion {
   duration: number;
 }
 
-interface GetAllCompanions {
+export interface GetAllCompanions {
   limit?: number;
   page?: number;
   subject?: string | string[];
   topic?: string | string[];
 }
 
-interface BuildClient {
+export interface BuildClient {
   key?: string;
   sessionToken?: string;
 }
 
-interface CreateUser {
+export interface CreateUser {
   email: string;
   name: string;
   image?: string;
   accountId: string;
 }
 
-interface SearchParams {
+export interface SearchParams {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-interface Avatar {
+export interface Avatar {
   userName: string;
   width: number;
   height: number;
   className?: string;
 }
 
-
-interface SavedMessage {
+export interface SavedMessage {
   role: "user" | "system" | "assistant";
   content: string;
 }
 
-interface CompanionComponentProps {
+export interface CompanionComponentProps {
   brainId: string;
   subject: string;
   topic: string;
@@ -94,4 +101,11 @@ interface CompanionComponentProps {
   userImage: string;
   voice: string;
   style: string;
+}
+
+export interface UserBookmark {
+  id: string;
+  user_id: string;
+  brain_id: string;
+  created_at: string;
 }

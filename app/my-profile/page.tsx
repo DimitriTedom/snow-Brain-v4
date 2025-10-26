@@ -5,7 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { getUserBrain, getUserSessions } from "@/lib/actions/brains.actions";
+import { getUserBrains, getRecentSessionBrains, getUserSessionCount } from "@/lib/actions/brains.actions";
 import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
 import { redirect } from "next/navigation";
@@ -16,8 +16,9 @@ const Profile = async () => {
   const user = await currentUser()
   if (!user) redirect('/sign-in');
 
-  const brains = await getUserBrain(user.id);
-  const sessionHistory = await getUserSessions(user.id);
+  const brains = await getUserBrains();
+  const sessionHistory = await getRecentSessionBrains(20);
+  const sessionCount = await getUserSessionCount();
 
   return (
     <main className="lg:w-3/4">
@@ -39,7 +40,7 @@ const Profile = async () => {
           <div className="border border-black rounded-lg p-3 gap-2 flex flex-col h-fit">
             <div className="flex gap-2 items-center">
               <Image src={"/icons/check.svg"} alt="Check icon" width={22} height={22} />
-              <p className="text-2xl font-bold">{sessionHistory.length}</p>
+              <p className="text-2xl font-bold">{sessionCount}</p>
             </div>
             <div>Lessons Completed</div>
           </div>

@@ -3,11 +3,12 @@ import SearchInput from "@/components/SearchInput";
 import SubjectFilter from "@/components/SubjectFilter";
 import { getAllBrains } from "@/lib/actions/brains.actions";
 import { getSubjectColor } from "@/lib/utils";
+import { SearchParams } from "@/types";
 
 const BrainLibrary = async ({searchParams}:SearchParams) => {
   const filters = await searchParams;
-  const subject = filters.subject ? filters.subject : '';
-  const topic = filters.topic ? filters.topic : '';
+  const subject = Array.isArray(filters.subject) ? filters.subject[0] : filters.subject || '';
+  const topic = Array.isArray(filters.topic) ? filters.topic[0] : filters.topic || '';
   
 
   const brains = await getAllBrains({subject,topic})

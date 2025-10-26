@@ -1,13 +1,13 @@
 import BrainCard from "@/components/BrainCard";
 import BrainList from "@/components/BrainList";
 import Cta from "@/components/Cta";
-import { getAllBrains, getRecentSession } from "@/lib/actions/brains.actions";
+import { getAllBrains, getRecentSessionBrains } from "@/lib/actions/brains.actions";
 import { getSubjectColor } from "@/lib/utils";
 
 const Page = async () => {
   try {
     const brains = await getAllBrains({ limit: 6 });
-    const recentSessionsBrains = await getRecentSession(10);
+    const recentSessionsBrains = await getRecentSessionBrains(10);
     
     return (
       <main>

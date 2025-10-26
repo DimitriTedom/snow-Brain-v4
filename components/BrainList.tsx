@@ -7,11 +7,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn, getSubjectColor } from "@/lib/utils";
+import { Brain } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
+
 interface BrainListProps {
   title: string;
-  brains: Companion[];
+  brains: Brain[];
   classNames?: string;
 }
 const BrainList = ({ title, brains, classNames }: BrainListProps) => {

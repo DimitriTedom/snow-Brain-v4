@@ -35,6 +35,7 @@ const BookmarksPage = async () => {
               <BrainCard 
                 key={brain.id} 
                 {...brain} 
+                bookmarked={true} // All brains on this page are bookmarked
                 color={getSubjectColor(brain.subject)} 
               />
             ))}

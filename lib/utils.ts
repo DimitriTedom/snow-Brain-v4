@@ -19,7 +19,7 @@ export const configureAssistant = (voice: string, style: string) => {
   const vapiAssistant: CreateAssistantDTO = {
     name: "SnowBrain v4",
     firstMessage:
-      "Hello, let's start the session. Today we'll be talking about {{topic}}.",
+      "Hello! Welcome to your tutoring session. Today we'll be learning about {{topic}} in {{subject}}. I'm excited to teach you! Are you ready to get started?",
     transcriber: {
       provider: "deepgram",
       model: "nova-3",
@@ -37,25 +37,28 @@ export const configureAssistant = (voice: string, style: string) => {
     model: {
       provider: "deep-seek",
       model: "deepseek-chat",
+      temperature: 0.7,
+      maxTokens: 150,
       messages: [
         {
           role: "system",
-          content: `You are a highly knowledgeable tutor teaching a real-time voice session with a student. Your goal is to teach the student about the topic and subject.
-        
-                  Tutor Guidelines:
-                  Stick to the given topic - {{ topic }} and subject - {{ subject }} and teach the student about it.
-                  Keep the conversation flowing smoothly while maintaining control.
-                  From time to time make sure that the student is following you and understands you.
-                  Break down the topic into smaller parts and teach the student one part at a time.
-                  Keep your style of conversation {{ style }}.
-                  Keep your responses short, like in a real voice conversation.
-                  Do not include any special characters in your responses - this is a voice conversation.
-            `,
+          content: `You are a highly knowledgeable tutor teaching a real-time voice session with a student about {{topic}} in {{subject}}.
+
+IMPORTANT: This is a LIVE VOICE conversation. Keep the conversation flowing naturally.
+
+Tutor Guidelines:
+- Teach the student about {{topic}} in {{subject}} using a {{style}} approach
+- Keep responses short (under 100 words) for voice conversation
+- Always ask questions to check understanding
+- Wait for student responses before continuing
+- No special characters - this is voice only
+- End each response with a question to maintain engagement
+- Be interactive, not just informative
+
+Start by briefly introducing the topic and asking if they're familiar with it.`,
         },
       ],
     },
-    clientMessages: [],
-    serverMessages: [],
   };
 
   return vapiAssistant;
