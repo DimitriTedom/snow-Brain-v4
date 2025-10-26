@@ -1,29 +1,57 @@
+"use client"
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import { toggleBookmark } from "@/lib/actions/brains.actions";
 
 interface BrainCardProps {
   id: string;
   name: string;
   topic: string;
+  bookmarked: boolean;
   subject: string;
   duration: number;
   color: string;
 }
+
 const BrainCard = ({
   id,
   name,
   topic,
+  bookmarked,
   subject,
   duration,
-  color,
+  color
 }: BrainCardProps) => {
+  const [isBookmarked, setIsBookmarked] = useState(bookmarked);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleBookmarkClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    try {
+      await toggleBookmark(id, isBookmarked);
+      setIsBookmarked(!isBookmarked);
+    } catch (error) {
+      console.error("Failed to toggle bookmark:", error);
+      // Optionally show an error toast or notification here
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <article className="companion-card" style={{ backgroundColor: color }}>
       <div className="flex justify-between items-center">
         <div className="subject-badge">{subject}</div>
-        <button className="companion-bookmark">
+        <button 
+          className="companion-bookmark" 
+          onClick={handleBookmarkClick}
+          disabled={isLoading}
+        >
           <Image
-            src={"/icons/bookmark.svg"}
+            src={isBookmarked ? "/icons/bookmark-filled.svg" : "/icons/bookmark.svg"}
             alt="bookmark"
             width={12.5}
             height={15}

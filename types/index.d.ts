@@ -31,6 +31,13 @@ interface Brain {
   updated_at: string;
 }
 
+interface UserBookmark {
+  id: string;
+  user_id: string;
+  brain_id: string;
+  created_at: string;
+}
+
 type Companion = Brain;
 
 interface CreateCompanion {

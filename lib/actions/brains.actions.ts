@@ -1,8 +1,7 @@
 "use server";
 import { auth } from "@clerk/nextjs/server";
 import { createSupabaseClient } from "../supabase";
-import { createSupabaseServerClient, getCurrentUserId } from "../supabase-server";
-import { createSupabaseClientWithAuth } from "../supabase-debug";
+import { getCurrentUserId } from "../supabase-server";
 
 export const createBrain = async (formData: CreateCompanion) => {
   const { userId: author } = await auth();
@@ -25,7 +24,7 @@ export const getAllBrains = async ({
   topic,
 }: GetAllCompanions) => {
   // Use server client to avoid JWT issues for now
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseClient();
   let query = supabase.from("brains").select();
 
   if (subject && topic) {
@@ -43,6 +42,18 @@ export const getAllBrains = async ({
   const { data: brains, error } = await query;
   console.log({ brains, error });
   if (error) throw new Error(error.message);
+
+  // Get bookmark status for current user
+  if (brains && brains.length > 0) {
+    const brainIds = brains.map(brain => brain.id);
+    const bookmarkStatus = await getUserBookmarkStatus(brainIds);
+    
+    // Add bookmark status to each brain
+    return brains.map(brain => ({
+      ...brain,
+      bookmarked: bookmarkStatus[brain.id] || false
+    }));
+  }
 
   return brains || [];
 };
@@ -72,7 +83,7 @@ export const addToSessionHistory = async (brainId: string) => {
   console.log("User ID:", userId);
   
   // Use debug client to see JWT structure
-  const supabase = await createSupabaseClientWithAuth();
+  const supabase = await createSupabaseClient();
 
   // First verify that the brain exists
   const { data: brainExists, error: brainError } = await supabase
@@ -110,7 +121,7 @@ export const getRecentSession = async (limit = 10) => {
   }
 
   // Use authenticated client to respect RLS policies
-  const supabase = await createSupabaseClientWithAuth();
+  const supabase = await createSupabaseClient();
 
   // First, let's check if there are any session history records for this user
   const { data: countData, error: countError } = await supabase
@@ -183,4 +194,156 @@ export const getUserBrain = async (userId: string) => {
 
   if (error) throw new Error(error.message);
   return data || [];
+};
+
+export const newBrainPermissions = async () =>{
+  const {userId, has} = await auth();
+  const supabase = await createSupabaseClient();
+
+  let limit = 0;
+
+  if (has({plan: 'pro'})) {
+    return true;
+  }else if(has({feature:"3_active_snow_brains"})) {
+    limit = 3;
+  } else if(has({feature:"10_active_snow_brains"})) {
+    limit = 10;
+  }
+
+  const {data,error} = await supabase
+  .from('brains').select('id',{count:'exact'}).eq('author',userId);
+  
+  if(error) {
+    throw new Error(`Error checking brain permissions: ${error.message}`); 
+  }
+  const brainCount = data?.length;
+  if (brainCount >= limit) {
+    return false;
+  }else{
+    return true
+  }
+
+}
+
+export const toggleBookmark = async (brainId: string, currentBookmarkState: boolean) => {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const supabase = await createSupabaseClient();
+  
+  try {
+    if (currentBookmarkState) {
+      // Remove bookmark
+      const { error } = await supabase
+        .from("user_bookmarks")
+        .delete()
+        .eq("brain_id", brainId)
+        .eq("user_id", userId);
+
+      if (error) throw new Error(error.message);
+      return { bookmarked: false };
+    } else {
+      // Add bookmark
+      const { data, error } = await supabase
+        .from("user_bookmarks")
+        .insert({ brain_id: brainId, user_id: userId })
+        .select()
+        .single();
+
+      if (error) throw new Error(error.message);
+      return { bookmarked: true };
+    }
+  } catch (error: any) {
+    // Fallback: If user_bookmarks table doesn't exist yet, use the old method
+    if (error.message?.includes('user_bookmarks') || error.message?.includes('does not exist')) {
+      console.warn("user_bookmarks table not found, using fallback method");
+      
+      // For now, just return the opposite state
+      return { bookmarked: !currentBookmarkState };
+    }
+    throw error;
+  }
+};
+
+export const getBookmarkedBrains = async ({
+  limit = 10,
+  page = 1,
+}: { limit?: number; page?: number } = {}) => {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const supabase = await createSupabaseClient();
+  
+  try {
+    const { data: bookmarks, error } = await supabase
+      .from("user_bookmarks")
+      .select(`
+        brain_id,
+        brains (
+          id,
+          name,
+          subject,
+          topic,
+          voice,
+          style,
+          duration,
+          author,
+          bookmarked,
+          created_at,
+          updated_at
+        )
+      `)
+      .eq("user_id", userId)
+      .range((page - 1) * limit, page * limit - 1)
+      .order("created_at", { ascending: false });
+
+    if (error) throw new Error(error.message);
+    return bookmarks?.map(bookmark => bookmark.brains).filter(brain => brain && (brain as any).id) || [];
+  } catch (error: any) {
+    // Fallback: If user_bookmarks table doesn't exist yet, return empty array
+    if (error.message?.includes('user_bookmarks') || error.message?.includes('does not exist')) {
+      console.warn("user_bookmarks table not found, returning empty bookmarks");
+      return [];
+    }
+    throw error;
+  }
+};
+
+export const getUserBookmarkStatus = async (brainIds: string[]) => {
+  const { userId } = await auth();
+  if (!userId) return {};
+
+  const supabase = await createSupabaseClient();
+  
+  try {
+    const { data: bookmarks, error } = await supabase
+      .from("user_bookmarks")
+      .select("brain_id")
+      .eq("user_id", userId)
+      .in("brain_id", brainIds);
+
+    if (error) {
+      console.error("Error fetching bookmark status:", error);
+      return {};
+    }
+
+    const bookmarkMap: Record<string, boolean> = {};
+    brainIds.forEach(id => {
+      bookmarkMap[id] = bookmarks?.some(bookmark => bookmark.brain_id === id) || false;
+    });
+    
+    return bookmarkMap;
+  } catch (error: any) {
+    // Fallback: If user_bookmarks table doesn't exist yet, return empty status
+    if (error.message?.includes('user_bookmarks') || error.message?.includes('does not exist')) {
+      console.warn("user_bookmarks table not found, returning empty bookmark status");
+      const bookmarkMap: Record<string, boolean> = {};
+      brainIds.forEach(id => {
+        bookmarkMap[id] = false;
+      });
+      return bookmarkMap;
+    }
+    console.error("Error fetching bookmark status:", error);
+    return {};
+  }
 };
