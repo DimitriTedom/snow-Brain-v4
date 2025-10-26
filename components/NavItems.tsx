@@ -7,6 +7,7 @@ const navItems = [
     {label:'Home', href: '/'},
     {label:'Brains', href: '/brains'},
     {label:'Bookmarks', href: '/bookmarks'},
+    {label:'Pricing', href: '/pricing'},
     {label:'My Profile',href:'/my-profile'}
 ]
 const NavItems = () => {

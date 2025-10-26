@@ -3,6 +3,7 @@ import { Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
 import NavBar from "@/components/NavBar";
 import UserManager from "@/components/UserManager";
+import Footer from "@/components/Footer";
 import { ClerkProvider } from "@clerk/nextjs";
 
 const bricolage = Bricolage_Grotesque({
@@ -18,15 +19,18 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.NodeNode;
 }>) {
   return (
-    <ClerkProvider appearance={{variables: {colorPrimary: '#fe5933'}}}>
+    <ClerkProvider appearance={{variables: {colorPrimary: '#8b5cf6'}}}>
       <html lang="en">
-        <NavBar/>
-        <body className={`${bricolage.variable} antialiased`}>
+        <body className={`${bricolage.variable} antialiased flex flex-col min-h-screen`}>
+          <NavBar/>
           <UserManager />
-          {children}
+          <div className="flex-grow">
+            {children}
+          </div>
+          <Footer />
         </body>
       </html>
     </ClerkProvider>
